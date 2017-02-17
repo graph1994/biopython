@@ -6,8 +6,7 @@
 """Unit test for Astral"""
 
 import unittest
-
-from Bio.SCOP import Astral, Scop
+from Bio.SCOP import *
 
 
 class AstralTests(unittest.TestCase):
@@ -25,8 +24,7 @@ class AstralTests(unittest.TestCase):
 
     def testConstructWithCustomFile(self):
         scop = Scop(dir_path="SCOP", version="test")
-        astral = Astral(scop=scop,
-                        astral_file="SCOP/scopseq-test/astral-scopdom-seqres-all-test.fa")
+        astral = Astral(scop=scop, astral_file="SCOP/scopseq-test/astral-scopdom-seqres-all-test.fa")
         self.assertEqual(str(astral.getSeqBySid('d3sdha_')), "AAAAA")
         self.assertEqual(str(astral.getSeqBySid('d4hbib_')), "KKKKK")
 

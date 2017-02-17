@@ -143,7 +143,6 @@ results will be generated for all versions listed above.
 """ % (versions)
     sys.exit(usage)
 
-
 if __name__ == "__main__":
     programs = ["codeml", "baseml", "yn00"]
     prog = None

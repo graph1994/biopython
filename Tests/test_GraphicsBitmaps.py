@@ -29,7 +29,6 @@ except:
 try:
     # Skip the test if reportlab is not installed
     from reportlab.graphics import renderPM
-    del renderPM
 except:
     raise MissingPythonDependencyError(
         "Install ReportLab's renderPM module if you want to create "

@@ -1,5 +1,4 @@
 # Copyright 2014 Joe Cora.
-# Revisions copyright 2017 Peter Cock.
 # All rights reserved.
 # This code is part of the Biopython distribution and governed by its
 # license.  Please see the LICENSE file that should have been included
@@ -7,10 +6,6 @@
 """Provides objects to represent NEXUS standard data type matrix coding.
 """
 from __future__ import print_function
-
-import sys
-
-from Bio._py3k import basestring
 
 
 class NexusError(Exception):
@@ -85,7 +80,7 @@ class StandardData(object):
     def __iter__(self):
         return self
 
-    def __next__(self):
+    def next(self):
         try:
             return_coding = self._data[self._current_pos]
         except:
@@ -94,11 +89,6 @@ class StandardData(object):
         else:
             self._current_pos += 1
             return return_coding
-
-    if sys.version_info[0] < 3:
-        def next(self):
-            """Deprecated Python 2 style alias for Python 3 style __next__ method."""
-            return self.__next__()
 
     def raw(self):
         """Returns the full coding as a python list."""

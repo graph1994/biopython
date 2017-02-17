@@ -99,11 +99,11 @@ def test_blast_output(outfile):
     print("I'm going to run the data through the parser to see what happens...")
     parser = parser_class()
     try:
-        parser.parse_file(outfile)
+        rec = parser.parse_file(outfile)
     except (KeyboardInterrupt, SystemExit):
         raise
-    except Exception as err:
-        exception_info = str(err)
+    except Exception as x:
+        exception_info = str(x)
         print("Dang, the parsing failed.")
     else:
         print("Parsing succeeded, no problems detected.")
@@ -149,7 +149,7 @@ def test_blast_output(outfile):
     consumer = DebuggingConsumer(consumer)
     try:
         scanner.feed(open(outfile), consumer)
-    except etype:
+    except etype as x:
         pass
     else:
         print("Odd, the exception disappeared!  What happened?")
@@ -194,7 +194,7 @@ def test_blast_output(outfile):
             try:
                 parser_class()._scanner.feed(
                     open(outfile), ParserSupport.TaggingConsumer())
-            except etype:
+            except etype as x:
                 pass
             print("*" * 20 + " END SCANNER TRACE " + "*" * 20)
         print("")
@@ -218,8 +218,8 @@ VERBOSITY = 0
 if __name__ == '__main__':
     try:
         optlist, args = getopt.getopt(sys.argv[1:], "hpnov")
-    except getopt.error as err:
-        sys.stderr.write("%s\n" % err)
+    except getopt.error as x:
+        sys.stderr.write("%s\n" % x)
         sys.exit(-1)
     if len(args) != 1:
         sys.stderr.write(USAGE)

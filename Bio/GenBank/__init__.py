@@ -103,8 +103,8 @@ _re_complex_location = re.compile(r"^%s$" % _complex_location)
 _possibly_complemented_complex_location = r"(%s|complement\(%s\))" \
                                           % (_complex_location, _complex_location)
 _re_complex_compound = re.compile(r"^(join|order|bond)\(%s(,%s)*\)$"
-                                  % (_possibly_complemented_complex_location,
-                                     _possibly_complemented_complex_location))
+                                 % (_possibly_complemented_complex_location,
+                                    _possibly_complemented_complex_location))
 
 
 assert _re_simple_location.match("104..160")
@@ -466,10 +466,10 @@ class FeatureParser(object):
     def parse(self, handle):
         """Parse the specified handle.
         """
-        _consumer = _FeatureConsumer(self.use_fuzziness,
-                                     self._cleaner)
-        self._scanner.feed(handle, _consumer)
-        return _consumer.data
+        self._consumer = _FeatureConsumer(self.use_fuzziness,
+                                          self._cleaner)
+        self._scanner.feed(handle, self._consumer)
+        return self._consumer.data
 
 
 class RecordParser(object):
@@ -496,10 +496,10 @@ class RecordParser(object):
     def parse(self, handle):
         """Parse the specified handle into a GenBank record.
         """
-        _consumer = _RecordConsumer()
+        self._consumer = _RecordConsumer()
 
-        self._scanner.feed(handle, _consumer)
-        return _consumer.data
+        self._scanner.feed(handle, self._consumer)
+        return self._consumer.data
 
 
 class _BaseGenBankConsumer(object):
@@ -523,8 +523,7 @@ class _BaseGenBankConsumer(object):
     def __getattr__(self, attr):
         return self._unhandled
 
-    @staticmethod
-    def _split_keywords(keyword_string):
+    def _split_keywords(self, keyword_string):
         """Split a string of keywords into a nice clean list.
         """
         # process the keywords into a python list
@@ -538,8 +537,7 @@ class _BaseGenBankConsumer(object):
         clean_keyword_list = [x.strip() for x in keyword_list]
         return clean_keyword_list
 
-    @staticmethod
-    def _split_accessions(accession_string):
+    def _split_accessions(self, accession_string):
         """Split a string of accession numbers into a list.
         """
         # first replace all line feeds with spaces
@@ -548,8 +546,7 @@ class _BaseGenBankConsumer(object):
 
         return [x.strip() for x in accession.split() if x.strip()]
 
-    @staticmethod
-    def _split_taxonomy(taxonomy_string):
+    def _split_taxonomy(self, taxonomy_string):
         """Split a string with taxonomy info into a list.
         """
         if not taxonomy_string or taxonomy_string == ".":
@@ -571,8 +568,7 @@ class _BaseGenBankConsumer(object):
 
         return clean_tax_list
 
-    @staticmethod
-    def _clean_location(location_string):
+    def _clean_location(self, location_string):
         """Clean whitespace out of a location string.
 
         The location parser isn't a fan of whitespace, so we clean it out
@@ -583,8 +579,7 @@ class _BaseGenBankConsumer(object):
         # the string - and this avoids importing string too.  See Bug 2684.
         return ''.join(location_string.split())
 
-    @staticmethod
-    def _remove_newlines(text):
+    def _remove_newlines(self, text):
         """Remove any newlines in the passed text, returning the new string.
         """
         # get rid of newlines in the qualifier value
@@ -594,21 +589,18 @@ class _BaseGenBankConsumer(object):
 
         return text
 
-    @staticmethod
-    def _normalize_spaces(text):
+    def _normalize_spaces(self, text):
         """Replace multiple spaces in the passed text with single spaces.
         """
         # get rid of excessive spaces
         return ' '.join(x for x in text.split(" ") if x)
 
-    @staticmethod
-    def _remove_spaces(text):
+    def _remove_spaces(self, text):
         """Remove all spaces from the passed text.
         """
         return text.replace(" ", "")
 
-    @staticmethod
-    def _convert_to_python_numbers(start, end):
+    def _convert_to_python_numbers(self, start, end):
         """Convert a start and end range to python notation.
 
         In GenBank, starts and ends are defined in "biological" coordinates,
@@ -932,8 +924,8 @@ class _FeatureConsumer(_BaseGenBankConsumer):
         for base_info in all_base_info:
             start, end = base_info.split('to')
             new_start, new_end = \
-                self._convert_to_python_numbers(int(start.strip()),
-                                                int(end.strip()))
+              self._convert_to_python_numbers(int(start.strip()),
+                                              int(end.strip()))
             this_location = SeqFeature.FeatureLocation(new_start, new_end)
             new_locations.append(this_location)
         return new_locations
@@ -1150,7 +1142,7 @@ class _FeatureConsumer(_BaseGenBankConsumer):
         import warnings
         from Bio import BiopythonParserWarning
         warnings.warn(BiopythonParserWarning("Couldn't parse feature location: %r"
-                                             % location_line))
+                                             % (location_line)))
 
     def feature_qualifier(self, key, value):
         """When we get a qualifier key and its value.
@@ -1251,8 +1243,8 @@ class _FeatureConsumer(_BaseGenBankConsumer):
         sequence = "".join(self._seq_data)
 
         if self._expected_size is not None \
-                and len(sequence) != 0 \
-                and self._expected_size != len(sequence):
+        and len(sequence) != 0 \
+        and self._expected_size != len(sequence):
             import warnings
             from Bio import BiopythonParserWarning
             warnings.warn("Expected sequence length %i, found %i (%s)."
@@ -1272,7 +1264,7 @@ class _FeatureConsumer(_BaseGenBankConsumer):
                 else:
                     seq_alphabet = IUPAC.ambiguous_rna
             elif 'PROTEIN' in self._seq_type.upper() \
-                    or self._seq_type == "PRT":  # PRT is used in EMBL-bank for patents
+            or self._seq_type == "PRT":  # PRT is used in EMBL-bank for patents
                 seq_alphabet = IUPAC.protein  # or extended protein?
             # work around ugly GenBank records which have circular or
             # linear but no indication of sequence type
@@ -1579,6 +1571,26 @@ def read(handle):
     return first
 
 
+def _test():
+    """Run the Bio.GenBank module's doctests."""
+    import doctest
+    import os
+    if os.path.isdir(os.path.join("..", "..", "Tests")):
+        print("Running doctests...")
+        cur_dir = os.path.abspath(os.curdir)
+        os.chdir(os.path.join("..", "..", "Tests"))
+        doctest.testmod()
+        os.chdir(cur_dir)
+        del cur_dir
+        print("Done")
+    elif os.path.isdir(os.path.join("Tests")):
+        print("Running doctests...")
+        cur_dir = os.path.abspath(os.curdir)
+        os.chdir(os.path.join("Tests"))
+        doctest.testmod()
+        os.chdir(cur_dir)
+        del cur_dir
+        print("Done")
+
 if __name__ == "__main__":
-    from Bio._utils import run_doctest
-    run_doctest()
+    _test()

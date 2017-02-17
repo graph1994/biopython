@@ -5,7 +5,7 @@
 
 import numpy
 
-from Bio.Cluster.cluster import *  # noqa - lots coming from C code
+from Bio.Cluster.cluster import *
 
 
 def _treesort(order, nodeorder, nodecounts, tree):

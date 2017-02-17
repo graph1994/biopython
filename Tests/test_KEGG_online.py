@@ -8,16 +8,17 @@
 """Tests for online functionality of the KEGG module."""
 
 # Builtins
+import os
 import unittest
-
-from Bio.KEGG.KGML import KGML_parser
-from Bio.KEGG.REST import kegg_conv, kegg_find, kegg_get
-from Bio.KEGG.REST import kegg_info, kegg_link, kegg_list
-
-from Bio import SeqIO
+import tempfile
 
 import requires_internet
 requires_internet.check()
+
+from Bio.KEGG.KGML import KGML_parser
+from Bio.KEGG.REST import *
+
+from Bio import SeqIO
 
 # TODO - revert to using with statements once we drop
 # Python 2.6 and 2.7, see http://bugs.python.org/issue12487

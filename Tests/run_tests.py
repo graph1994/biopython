@@ -144,15 +144,14 @@ DOCTEST_MODULES = [
 ]
 # Silently ignore any doctests for modules requiring numpy!
 if is_numpy():
-    DOCTEST_MODULES.extend([
-        "Bio.Affy.CelFile",
-        "Bio.MaxEntropy",
-        "Bio.PDB.Polypeptide",
-        "Bio.PDB.Selection",
-        "Bio.SeqIO.PdbIO",
-        "Bio.Statistics.lowess",
-        "Bio.SVDSuperimposer",
-    ])
+    DOCTEST_MODULES.extend(["Bio.Affy.CelFile",
+                            "Bio.MaxEntropy",
+                            "Bio.PDB.Polypeptide",
+                            "Bio.PDB.Selection",
+                            "Bio.SeqIO.PdbIO",
+                            "Bio.Statistics.lowess",
+                            "Bio.SVDSuperimposer",
+                            ])
 
 
 try:
@@ -185,20 +184,20 @@ def _have_bug17666():
     if sys.version_info[0] >= 3:
         import codecs
         bgzf_eof = codecs.latin_1_encode(bgzf_eof)[0]
-    handle = gzip.GzipFile(fileobj=BytesIO(bgzf_eof))
+    h = gzip.GzipFile(fileobj=BytesIO(bgzf_eof))
     try:
-        data = handle.read()
-        handle.close()
+        data = h.read()
+        h.close()
         assert not data, "Should be zero length, not %i" % len(data)
         return False
     except TypeError as err:
         # TypeError: integer argument expected, got 'tuple'
-        handle.close()
+        h.close()
         return True
 if _have_bug17666():
     DOCTEST_MODULES.remove("Bio.bgzf")
 
-SYSTEM_LANG = os.environ.get('LANG', 'C')  # Cache this
+system_lang = os.environ.get('LANG', 'C')  # Cache this
 
 
 def main(argv):
@@ -237,17 +236,17 @@ def main(argv):
     verbosity = VERBOSITY
 
     # deal with the options
-    for opt, _ in opts:
-        if opt == "--help":
+    for o, a in opts:
+        if o == "--help":
             print(__doc__)
             return 0
-        if opt == "--offline":
+        if o == "--offline":
             print("Skipping any tests requiring internet access")
             # This is a bit of a hack...
             import requires_internet
             requires_internet.check.available = False
             # The check() function should now report internet not available
-        if opt == "-g" or opt == "--generate":
+        if o == "-g" or o == "--generate":
             if len(args) > 1:
                 print("Only one argument (the test name) needed for generate")
                 print(__doc__)
@@ -264,7 +263,7 @@ def main(argv):
             test.generate_output()
             return 0
 
-        if opt == "-v" or opt == "--verbose":
+        if o == "-v" or o == "--verbose":
             verbosity = 2
 
     # deal with the arguments, which should be names of tests to run
@@ -326,18 +325,13 @@ class ComparisonTestCase(unittest.TestCase):
             raise ValueError("\nOutput:   %s\nExpected: %s"
                              % (self.name, expected_test))
 
-        # Track the line number. Starts at 1 to account for the output file
-        # header line.
-        line_number = 1
-
         # now loop through the output and compare it to the expected file
         while True:
             expected_line = expected.readline()
             output_line = self.output.readline()
-            line_number += 1
 
             # stop looping if either of the info handles reach the end
-            if (not expected_line) or (not output_line):
+            if not(expected_line) or not(output_line):
                 # make sure both have no information left
                 assert expected_line == '', "Unread: %s" % expected_line
                 assert output_line == '', "Extra output: %s" % output_line
@@ -355,10 +349,8 @@ class ComparisonTestCase(unittest.TestCase):
             # otherwise make sure the two lines are the same
             elif expected_line != output_line:
                 expected.close()
-                raise ValueError("\nOutput  : %s\nExpected: %s\n%s line %s"
-                                 % (repr(output_line), repr(expected_line),
-                                    outputfile, line_number))
-
+                raise ValueError("\nOutput  : %s\nExpected: %s"
+                                 % (repr(output_line), repr(expected_line)))
         expected.close()
 
     def generate_output(self):
@@ -392,13 +384,10 @@ class TestRunner(unittest.TextTestRunner):
         file = __file__
     testdir = os.path.abspath(os.path.dirname(file) or os.curdir)
 
-    def __init__(self, tests=None, verbosity=0):
+    def __init__(self, tests=(), verbosity=0):
         # if no tests were specified to run, we run them all
         # including the doctests
-        if tests is None:
-            self.tests = []
-        else:
-            self.tests = tests
+        self.tests = tests
         if not self.tests:
             # Make a list of all applicable test modules.
             names = os.listdir(TestRunner.testdir)
@@ -420,8 +409,8 @@ class TestRunner(unittest.TextTestRunner):
         output = StringIO()
         # Restore the language and thus default encoding (in case a prior
         # test changed this, e.g. to help with detecting command line tools)
-        global SYSTEM_LANG
-        os.environ['LANG'] = SYSTEM_LANG
+        global system_lang
+        os.environ['LANG'] = system_lang
         # Always run tests from the Tests/ folder where run_tests.py
         # should be located (as we assume this with relative paths etc)
         os.chdir(self.testdir)
@@ -515,18 +504,18 @@ class TestRunner(unittest.TextTestRunner):
     def run(self):
         """Run tests, return number of failures (integer)."""
         failures = 0
-        start_time = time.time()
+        startTime = time.time()
         for test in self.tests:
             ok = self.runTest(test)
             if not ok:
                 failures += 1
         total = len(self.tests)
-        stop_time = time.time()
-        time_taken = stop_time - start_time
+        stopTime = time.time()
+        timeTaken = stopTime - startTime
         sys.stderr.write(self.stream.getvalue())
         sys.stderr.write('-' * 70 + "\n")
         sys.stderr.write("Ran %d test%s in %.3f seconds\n" %
-                         (total, total != 1 and "s" or "", time_taken))
+                         (total, total != 1 and "s" or "", timeTaken))
         sys.stderr.write("\n")
         if failures:
             sys.stderr.write("FAILED (failures = %d)\n" % failures)

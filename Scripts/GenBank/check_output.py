@@ -87,7 +87,6 @@ def write_format(file):
     cur_handle.close()
     compare_handle.close()
 
-
 if __name__ == "__main__":
     if len(sys.argv) != 2:
         print(__doc__)

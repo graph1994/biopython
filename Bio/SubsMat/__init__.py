@@ -115,8 +115,10 @@ import re
 import sys
 import copy
 import math
+import warnings
 
 # BioPython imports
+import Bio
 from Bio import Alphabet
 from Bio.SubsMat import FreqTable
 

@@ -427,7 +427,7 @@ def check_simple_write_read(records, indent=" "):
             elif format == "clustal":
                 assert r1.id.replace(" ", "_")[:30] == r2.id, \
                     "'%s' vs '%s'" % (r1.id, r2.id)
-            elif format in ["stockholm", "maf"]:
+            elif format == "stockholm":
                 assert r1.id.replace(" ", "_") == r2.id, \
                     "'%s' vs '%s'" % (r1.id, r2.id)
             elif format == "fasta":

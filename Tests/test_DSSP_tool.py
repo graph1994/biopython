@@ -27,17 +27,14 @@ try:
         # Older versions of DSSP
         subprocess.check_call(["dssp", "-h"], **quiet_kwargs)
 except OSError:
-    try:
-        subprocess.check_call(["mkdssp", "--version"], **quiet_kwargs)
-    except OSError:
-        raise MissingExternalDependencyError(
-            "Install dssp if you want to use it from Biopython.")
+    raise MissingExternalDependencyError(
+        "Install dssp if you want to use it from Biopython.")
 
 
 class DSSP_test(unittest.TestCase):
     """Test DSSP module"""
 
-    def test_dssp(self):
+    def test_DSSP(self):
         """Test DSSP generation from PDB"""
         p = PDBParser()
         pdbfile = "PDB/2BEG.pdb"

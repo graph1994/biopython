@@ -154,7 +154,6 @@ def set_statusbar(event):
         statustext.set('This is the statusbar')
     return
 
-
 # Set commands and bind events
 menue_single.bind('<<MenuSelect>>', set_statusbar)
 apply_button.config(command=apply_operation)

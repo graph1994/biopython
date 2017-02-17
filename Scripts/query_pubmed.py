@@ -26,7 +26,6 @@ Arguments:
 * http://www.ncbi.nlm.nih.gov/Entrez/
 """)
 
-
 if __name__ == '__main__':
     try:
         optlist, args = getopt.getopt(sys.argv[1:], "hcd:")

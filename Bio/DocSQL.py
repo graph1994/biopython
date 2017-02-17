@@ -5,7 +5,7 @@
 # license.  Please see the LICENSE file that should have been included
 # as part of this package.
 
-"""Bio.DocSQL: easy access to DB API databases (DEPRECATED).
+"""Bio.DocSQL: easy access to DB API databases.
 
 >>> import os
 >>> import MySQLdb
@@ -26,13 +26,8 @@ CreatePeople(message=Success)
 from __future__ import print_function
 
 import sys
-import warnings
 
 from Bio import MissingPythonDependencyError
-from Bio import BiopythonDeprecationWarning
-
-warnings.warn("Bio.DocSQL is now deprecated will be removed in a "
-              "future release of Biopython.", BiopythonDeprecationWarning)
 
 try:
     import MySQLdb

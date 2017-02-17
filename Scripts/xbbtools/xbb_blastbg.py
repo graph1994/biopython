@@ -129,7 +129,6 @@ class BlastWorker(threading.Thread):
                                    'BLAST error:\n\n' + str(e))
         self.finished = 1
 
-
 if __name__ == '__main__':
     os.system('python xbb_blast.py' +
               ' ATGACAAAGCTAATTATTCACTTGGTTTCAGACTCTTCTGTGCAAACTGC')

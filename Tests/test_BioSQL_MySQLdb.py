@@ -4,10 +4,10 @@
 # as part of this package.
 
 """Run BioSQL tests using SQLite"""
+from Bio import MissingExternalDependencyError
+from BioSQL import BioSeqDatabase
 
-import unittest
-
-from common_BioSQL import *  # noqa
+from common_BioSQL import *
 
 DBDRIVER = 'MySQLdb'
 DBTYPE = 'mysql'
